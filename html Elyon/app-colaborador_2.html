@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elyon — Suas aulas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0F0E0C; --bg2: #181714; --bg3: #221F1B; --bg4: #2C2824;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+  --text: #F5F0E8; --text2: #A09890; --text3: #6B6358;
+  --accent: #E8B866; --accent2: #D4A050;
+  --accent-soft: rgba(232,184,102,0.12);
+  --green: #5DB896; --green-soft: rgba(93,184,150,0.12);
+  --red: #E06B5A; --red-soft: rgba(224,107,90,0.12);
+  --purple: #9B8EE0; --purple-soft: rgba(155,142,224,0.12);
+  --radius: 14px; --radius-sm: 8px; --radius-lg: 20px;
+  --serif: 'DM Serif Display', serif; --sans: 'DM Sans', sans-serif;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* NAV MOBILE */
+.nav-bottom {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-bottom-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 10px 4px;
+  cursor: pointer; color: var(--text3);
+  font-size: 10px; font-weight: 500;
+  gap: 4px; transition: color .2s;
+  border: none; background: none; font-family: var(--sans);
+}
+.nav-bottom-item .icon { font-size: 20px; }
+.nav-bottom-item.active { color: var(--accent); }
+
+/* TOPBAR */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-brand { display: flex; align-items: center; gap: 8px; }
+.brand-mark {
+  width: 30px; height: 30px; background: var(--accent);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--bg);
+}
+.topbar-title { font-family: var(--serif); font-size: 18px; }
+.user-info { display: flex; align-items: center; gap: 8px; }
+.user-name { font-size: 12px; color: var(--text2); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.credits-pill {
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid rgba(232,184,102,0.2);
+  border-radius: 20px; padding: 4px 10px;
+  font-size: 11px; font-weight: 600;
+}
+.logout-btn {
+  background: none; border: none; color: var(--text3);
+  cursor: pointer; font-size: 16px; padding: 4px;
+}
+
+/* CONTENT */
+.content { padding: 20px 20px 80px; }
+.page { display: none; }
+.page.active { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* BUSCAR */
+.search-hero { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; }
+.search-hero h2 { font-family: var(--serif); font-size: 22px; font-weight: 400; margin-bottom: 4px; }
+.search-hero p { color: var(--text2); font-size: 13px; margin-bottom: 16px; }
+.search-bar { display: flex; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius); overflow: hidden; }
+.search-bar input { flex:1; background:transparent; border:none; outline:none; padding:11px 14px; color:var(--text); font-family:var(--sans); font-size:13px; }
+.search-bar input::placeholder { color:var(--text3); }
+
+.filters { display: flex; gap: 8px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px; }
+.filter-chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; background: var(--bg3);
+  border: 1px solid var(--border2); border-radius: 20px;
+  font-size: 12px; color: var(--text2); cursor: pointer;
+  white-space: nowrap; transition: all .2s; flex-shrink: 0;
+}
+.filter-chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+.prof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+@media (max-width: 400px) { .prof-grid { grid-template-columns: 1fr; } }
+@media (min-width: 600px) { .prof-grid { grid-template-columns: repeat(3,1fr); } }
+
+.prof-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; cursor: pointer;
+  transition: all .2s;
+}
+.prof-card:active { transform: scale(.97); }
+.prof-avatar {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 10px;
+}
+.prof-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.prof-spec { font-size: 11px; color: var(--text2); margin-bottom: 8px; }
+.prof-rating { font-size: 12px; color: var(--accent); font-weight: 600; }
+.prof-badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); margin-top: 6px; }
+.btn-agendar { width: 100%; background: var(--accent); color: var(--bg); border: none; padding: 8px; border-radius: var(--radius-sm); font-family: var(--sans); font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+
+/* MINHAS AULAS */
+.aula-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+  display: flex; gap: 14px; align-items: center;
+}
+.aula-date { text-align: center; flex-shrink: 0; }
+.aula-day { font-family: var(--serif); font-size: 28px; color: var(--accent); line-height: 1; }
+.aula-month { font-size: 10px; color: var(--text3); text-transform: uppercase; }
+.aula-info { flex: 1; }
+.aula-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.aula-meta { font-size: 11px; color: var(--text3); }
+.status-pill { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+.status-confirmada { background: var(--green-soft); color: var(--green); }
+.status-pendente { background: var(--accent-soft); color: var(--accent); }
+.status-concluida { background: var(--bg3); color: var(--text3); }
+
+/* MODAL */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+  z-index: 200; align-items: flex-end; justify-content: center;
+  padding: 0;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 20px 20px 0 0; width: 100%; max-width: 600px;
+  max-height: 90vh; overflow-y: auto;
+  animation: slideUp .3s ease; padding: 24px;
+}
+@keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+.modal-handle { width: 40px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 20px; }
+.modal h3 { font-family: var(--serif); font-size: 22px; margin-bottom: 4px; }
+.modal-spec { color: var(--text2); font-size: 13px; margin-bottom: 16px; }
+.modal-bio { background: var(--bg3); border-radius: var(--radius-sm); border-left: 3px solid var(--accent); padding: 12px; font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
+.slots-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 20px; }
+.slot-btn { padding: 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; color: var(--text2); cursor: pointer; text-align: center; transition: all .2s; }
+.slot-btn.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.btn-confirm { width: 100%; background: var(--accent); color: var(--bg); border: none; padding: 14px; border-radius: var(--radius); font-family: var(--sans); font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-confirm:disabled { opacity: .4; cursor: not-allowed; }
+
+/* EMPTY */
+.empty { text-align: center; padding: 48px 20px; color: var(--text3); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--bg2); color: var(--text);
+  border: 1px solid var(--border2); border-radius: var(--radius);
+  padding: 12px 20px; font-size: 13px; font-weight: 500;
+  z-index: 999; opacity: 0; transition: all .3s;
+  white-space: nowrap; box-shadow: var(--shadow);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: var(--bg4); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-mark">E</div>
+    <span class="topbar-title">Elyon</span>
+  </div>
+  <div class="user-info">
+    <span class="user-name" id="user-name">...</span>
+    <span class="credits-pill" id="credits-pill">🎓 8</span>
+    <button class="logout-btn" onclick="fazerLogout()" title="Sair">⎋</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- BUSCAR -->
+  <div class="page active" id="page-buscar">
+    <div class="search-hero">
+      <h2 id="greeting">Olá! 👋</h2>
+      <p>Encontre seu professor e agende uma aula</p>
+      <div class="search-bar">
+        <input type="text" placeholder="Buscar por instrumento ou professor..." id="search-input" oninput="filtrarProfessores()">
+      </div>
+      <div class="filters">
+        <div class="filter-chip active" onclick="setFiltro('todos',this)">Todos</div>
+        <div class="filter-chip" onclick="setFiltro('musica',this)">🎵 Música</div>
+        <div class="filter-chip" onclick="setFiltro('arte',this)">🎨 Arte</div>
+        <div class="filter-chip" onclick="setFiltro('online',this)">💻 Online</div>
+        <div class="filter-chip" onclick="setFiltro('top',this)">⭐ Top</div>
+      </div>
+    </div>
+    <div class="prof-grid" id="prof-grid">
+      <div style="text-align:center;color:var(--text3);padding:40px;grid-column:1/-1;">Carregando professores...</div>
+    </div>
+  </div>
+
+  <!-- MINHAS AULAS -->
+  <div class="page" id="page-aulas">
+    <h2 style="font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:16px;">Minhas aulas</h2>
+    <div id="aulas-list">
+      <div class="empty"><div class="empty-icon">📅</div><p>Nenhuma aula agendada ainda.</p></div>
+    </div>
+  </div>
+
+  <!-- PROGRESSO -->
+  <div class="page" id="page-progresso">
+    <h2 style="font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:16px;">Meu progresso</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center;">
+        <div style="font-family:var(--serif);font-size:32px;color:var(--accent);" id="stat-aulas">0</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">aulas realizadas</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center;">
+        <div style="font-family:var(--serif);font-size:32px;color:var(--green);" id="stat-creditos">0</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">créditos restantes</div>
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;">Perfil</div>
+      <div style="font-size:14px;margin-bottom:8px;" id="perfil-nome"></div>
+      <div style="font-size:13px;color:var(--text2);" id="perfil-email"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV BOTTOM -->
+<nav class="nav-bottom">
+  <button class="nav-bottom-item active" onclick="showPage('buscar',this)">
+    <span class="icon">🔍</span><span>Buscar</span>
+  </button>
+  <button class="nav-bottom-item" onclick="showPage('aulas',this)">
+    <span class="icon">📅</span><span>Aulas</span>
+  </button>
+  <button class="nav-bottom-item" onclick="showPage('progresso',this)">
+    <span class="icon">📈</span><span>Progresso</span>
+  </button>
+</nav>
+
+<!-- MODAL PROFESSOR -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="display:flex;gap:14px;margin-bottom:16px;align-items:center;">
+      <div class="prof-avatar" id="m-avatar" style="width:56px;height:56px;flex-shrink:0;"></div>
+      <div>
+        <h3 id="m-nome"></h3>
+        <div class="modal-spec" id="m-spec"></div>
+      </div>
+    </div>
+    <div class="modal-bio" id="m-bio"></div>
+    <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Horários disponíveis</div>
+    <div class="slots-grid" id="m-slots"></div>
+    <button class="btn-confirm" id="btn-confirm" disabled onclick="confirmarAula()">Confirmar aula</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'
+  import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, increment, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkXEI77NRsN52ojk0La4_hgOVmK6sdq1c",
+    authDomain: "elyon-hub.firebaseapp.com",
+    projectId: "elyon-hub",
+    storageBucket: "elyon-hub.firebasestorage.app",
+    messagingSenderId: "798443608741",
+    appId: "1:798443608741:web:310a082137f374bfe74b4c"
+  }
+
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
+  const db = getFirestore(app)
+
+  let currentUser = null
+  let userData = null
+  let professores = []
+  let filtroAtivo = 'todos'
+  let profSelecionado = null
+  let slotSelecionado = null
+
+  // Auth guard
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return }
+    currentUser = user
+    const userDoc = await getDoc(doc(db, 'users', user.uid))
+    if (userDoc.exists()) {
+      userData = userDoc.data()
+      if (userData.role !== 'colaborador') {
+        if (userData.role === 'professor') window.location.href = 'portal-professor_1.html'
+        else if (userData.role === 'rh') window.location.href = 'portal-rh_1.html'
+        return
+      }
+      document.getElementById('user-name').textContent = userData.nome?.split(' ')[0] || 'Usuário'
+      document.getElementById('greeting').textContent = `Olá, ${userData.nome?.split(' ')[0]}! 👋`
+      document.getElementById('credits-pill').textContent = `🎓 ${userData.creditos || 0}`
+      document.getElementById('stat-creditos').textContent = userData.creditos || 0
+      document.getElementById('perfil-nome').textContent = userData.nome
+      document.getElementById('perfil-email').textContent = userData.email
+    }
+    carregarProfessores()
+    carregarAulas()
+  })
+
+  async function carregarProfessores() {
+    try {
+      const snap = await getDocs(collection(db, 'professores'))
+      professores = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      renderProfessores(professores)
+    } catch(e) {
+      // Mostrar professores de exemplo se banco vazio
+      professores = [
+        { id:'1', nome:'Rafael Mendes', especialidade:'Violão & Guitarra', emoji:'🎸', tipo:'musica', rating:4.9, online:true, bio:'Professor com 12 anos de experiência em MPB, bossa nova e rock.', slots:['09h00','14h00','19h00','20h00'], cor:'linear-gradient(135deg,#3d2b1a,#6b3a1a)' },
+        { id:'2', nome:'Ana Lima', especialidade:'Piano & Teclado', emoji:'🎹', tipo:'musica', rating:4.8, online:true, bio:'Pianista clássica formada pela USP. Ama ensinar iniciantes!', slots:['10h00','11h00','14h00'], cor:'linear-gradient(135deg,#1a2b3d,#1a3a5c)' },
+        { id:'3', nome:'Carla Souza', especialidade:'Pintura & Aquarela', emoji:'🖌️', tipo:'arte', rating:5.0, online:true, bio:'Artista plástica com obras expostas em São Paulo e Curitiba.', slots:['09h00','15h00','16h00'], cor:'linear-gradient(135deg,#2b1a2e,#4a1a5c)' },
+        { id:'4', nome:'Patrícia Vaz', especialidade:'Canto & Vocal', emoji:'🎤', tipo:'musica', rating:4.9, online:true, bio:'Cantora e professora com especialização em técnica vocal nos EUA.', slots:['10h00','14h00','19h00'], cor:'linear-gradient(135deg,#2b1a1a,#5c1a1a)' },
+      ]
+      renderProfessores(professores)
+    }
+  }
+
+  function renderProfessores(list) {
+    const grid = document.getElementById('prof-grid')
+    if (!list.length) { grid.innerHTML = '<div style="text-align:center;color:var(--text3);padding:40px;grid-column:1/-1;">Nenhum professor encontrado.</div>'; return }
+    grid.innerHTML = list.map(p => `
+      <div class="prof-card" onclick="abrirModal('${p.id}')">
+        <div class="prof-avatar" style="background:${p.cor || 'var(--bg3)'};">${p.emoji || '🎵'}</div>
+        <div class="prof-name">${p.nome}</div>
+        <div class="prof-spec">${p.especialidade}</div>
+        <div class="prof-rating">★ ${p.rating || '4.9'}</div>
+        <span class="prof-badge">${p.online ? '💻 Online' : '📍 Presencial'}</span>
+        <button class="btn-agendar">Agendar →</button>
+      </div>`).join('')
+  }
+
+  window.filtrarProfessores = function() {
+    const q = document.getElementById('search-input').value.toLowerCase()
+    let list = professores
+    if (filtroAtivo === 'musica') list = list.filter(p => p.tipo === 'musica')
+    if (filtroAtivo === 'arte') list = list.filter(p => p.tipo === 'arte')
+    if (filtroAtivo === 'online') list = list.filter(p => p.online)
+    if (filtroAtivo === 'top') list = list.filter(p => p.rating >= 4.9)
+    if (q) list = list.filter(p => p.nome?.toLowerCase().includes(q) || p.especialidade?.toLowerCase().includes(q))
+    renderProfessores(list)
+  }
+
+  window.setFiltro = function(f, el) {
+    filtroAtivo = f
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'))
+    el.classList.add('active')
+    filtrarProfessores()
+  }
+
+  window.abrirModal = function(id) {
+    profSelecionado = professores.find(p => p.id === id)
+    if (!profSelecionado) return
+    slotSelecionado = null
+    document.getElementById('m-avatar').style.background = profSelecionado.cor || 'var(--bg3)'
+    document.getElementById('m-avatar').textContent = profSelecionado.emoji || '🎵'
+    document.getElementById('m-avatar').style.fontSize = '28px'
+    document.getElementById('m-nome').textContent = profSelecionado.nome
+    document.getElementById('m-spec').textContent = profSelecionado.especialidade
+    document.getElementById('m-bio').textContent = profSelecionado.bio || 'Professor experiente na plataforma Elyon.'
+    const slots = profSelecionado.slots || ['09h00','14h00','19h00']
+    document.getElementById('m-slots').innerHTML = slots.map(s => `<div class="slot-btn" onclick="selectSlot(this,'${s}')">${s}</div>`).join('')
+    document.getElementById('btn-confirm').disabled = true
+    document.getElementById('modal').classList.add('open')
+  }
+
+  window.selectSlot = function(el, slot) {
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'))
+    el.classList.add('selected')
+    slotSelecionado = slot
+    document.getElementById('btn-confirm').disabled = false
+  }
+
+  window.confirmarAula = async function() {
+    if (!profSelecionado || !slotSelecionado || !currentUser) return
+    if ((userData?.creditos || 0) <= 0) { showToast('Sem créditos disponíveis!'); return }
+    document.getElementById('btn-confirm').disabled = true
+    document.getElementById('btn-confirm').textContent = 'Agendando...'
+    try {
+      const hoje = new Date()
+      await addDoc(collection(db, 'aulas'), {
+        colaboradorId: currentUser.uid,
+        colaboradorNome: userData.nome,
+        professorId: profSelecionado.id,
+        professorNome: profSelecionado.nome,
+        modalidade: profSelecionado.especialidade,
+        horario: slotSelecionado,
+        data: hoje.toLocaleDateString('pt-BR'),
+        status: 'confirmada',
+        modo: 'online',
+        criadoEm: hoje.toISOString(),
+      })
+      await updateDoc(doc(db, 'users', currentUser.uid), { creditos: increment(-1) })
+      userData.creditos = (userData.creditos || 1) - 1
+      document.getElementById('credits-pill').textContent = `🎓 ${userData.creditos}`
+      closeModal()
+      showToast(`Aula com ${profSelecionado.nome} confirmada! 🎉`)
+      carregarAulas()
+    } catch(e) {
+      showToast('Erro ao agendar. Tente novamente.')
+    }
+    document.getElementById('btn-confirm').disabled = false
+    document.getElementById('btn-confirm').textContent = 'Confirmar aula'
+  }
+
+  window.closeModal = function() { document.getElementById('modal').classList.remove('open') }
+
+  async function carregarAulas() {
+    if (!currentUser) return
+    try {
+      const q = query(collection(db, 'aulas'), where('colaboradorId', '==', currentUser.uid))
+      const snap = await getDocs(q)
+      const aulas = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      const el = document.getElementById('aulas-list')
+      document.getElementById('stat-aulas').textContent = aulas.filter(a => a.status === 'concluida').length
+      if (!aulas.length) {
+        el.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma aula agendada ainda.</p></div>'
+        return
+      }
+      el.innerHTML = aulas.map(a => `
+        <div class="aula-card">
+          <div class="aula-date">
+            <div class="aula-day">${a.data?.split('/')[0] || '--'}</div>
+            <div class="aula-month">${obterMes(a.data)}</div>
+          </div>
+          <div style="width:1px;background:var(--border);align-self:stretch;flex-shrink:0;"></div>
+          <div class="aula-info">
+            <div class="aula-title">${a.modalidade}</div>
+            <div class="aula-meta">👤 ${a.professorNome} · 🕐 ${a.horario}</div>
+          </div>
+          <span class="status-pill status-${a.status}">${a.status}</span>
+        </div>`).join('')
+    } catch(e) {
+      document.getElementById('aulas-list').innerHTML = '<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma aula agendada ainda.</p></div>'
+    }
+  }
+
+  function obterMes(dataStr) {
+    if (!dataStr) return '--'
+    const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+    const partes = dataStr.split('/')
+    return meses[parseInt(partes[1])-1] || '--'
+  }
+
+  window.showPage = function(name, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+    document.querySelectorAll('.nav-bottom-item').forEach(n => n.classList.remove('active'))
+    document.getElementById('page-'+name).classList.add('active')
+    el.classList.add('active')
+    if (name === 'aulas') carregarAulas()
+  }
+
+  window.fazerLogout = async function() {
+    await signOut(auth)
+    window.location.href = 'login.html'
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast')
+    t.textContent = msg; t.classList.add('show')
+    setTimeout(() => t.classList.remove('show'), 3000)
+  }
+</script>
+</body>
+</html>

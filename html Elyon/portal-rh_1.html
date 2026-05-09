@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elyon — Portal RH</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F7F6F3; --bg2:#FFFFFF; --bg3:#F0EEE9; --bg4:#E8E5DF;
+  --border:#E2DED7; --border2:#CEC9C0;
+  --text:#1A1916; --text2:#6B6760; --text3:#9E9A94;
+  --gold:#C8963C; --gold2:#E8B45A; --gold-bg:#FDF6EA; --gold-bdr:#EDD89A;
+  --green:#2D7A5F; --green-bg:#EAF5F0; --green-bdr:#A8D9C8;
+  --red:#C0392B; --red-bg:#FDECEA;
+  --blue:#2563A8; --blue-bg:#EBF2FB;
+  --purple:#6B46C1; --purple-bg:#F3EFFC;
+  --serif:'Syne',sans-serif; --sans:'Inter',sans-serif;
+  --radius:12px; --radius-sm:8px; --radius-lg:18px;
+  --shadow:0 2px 12px rgba(0,0,0,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:#2A2420;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;transition:transform .3s;}
+.sidebar-top{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.brand-mark{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;color:#fff;}
+.brand-name{font-family:var(--serif);font-size:17px;color:#fff;}
+.brand-badge{font-size:10px;padding:2px 8px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bdr);border-radius:20px;display:inline-block;margin-top:2px;}
+.company-info{background:rgba(255,255,255,0.07);border-radius:var(--radius-sm);padding:10px;display:flex;align-items:center;gap:8px;}
+.company-icon{width:28px;height:28px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.company-name{font-size:12px;font-weight:600;color:#fff;}
+.company-sub{font-size:10px;color:rgba(255,255,255,0.5);margin-top:1px;}
+.nav{padding:12px 12px;flex:1;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;color:rgba(255,255,255,0.55);font-size:13px;font-weight:500;margin-bottom:2px;transition:all .2s;border:none;background:none;font-family:var(--sans);width:100%;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);}
+.nav-item.active{background:var(--gold);color:#fff;}
+.nav-icon{font-size:15px;width:18px;text-align:center;}
+.sidebar-footer{padding:12px;border-top:1px solid rgba(255,255,255,0.08);}
+.user-row{display:flex;align-items:center;gap:8px;padding:8px;border-radius:var(--radius-sm);cursor:pointer;}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8916a);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.user-name-el{font-size:12px;font-weight:600;color:rgba(255,255,255,0.85);}
+.logout-btn-sidebar{margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:14px;}
+
+/* MAIN */
+.main{margin-left:220px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--serif);font-size:16px;font-weight:600;flex:1;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:none;}
+.btn-primary{background:var(--text);color:#fff;}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border2);}
+.btn-outline:hover{background:var(--bg3);}
+
+.content{padding:24px;flex:1;}
+.page{display:none;}
+.page.active{display:block;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+@media(min-width:600px){.kpi-grid{grid-template-columns:repeat(4,1fr);}}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.kpi.gold{background:var(--gold-bg);border-color:var(--gold-bdr);}
+.kpi.green{background:var(--green-bg);border-color:var(--green-bdr);}
+.kpi.blue{background:var(--blue-bg);border-color:#A8C8ED;}
+.kpi.purple{background:var(--purple-bg);border-color:#C4B1F0;}
+.kpi-icon{font-size:18px;margin-bottom:8px;}
+.kpi-val{font-family:var(--serif);font-size:26px;font-weight:700;line-height:1;margin-bottom:4px;}
+.kpi.gold .kpi-val{color:var(--gold);}
+.kpi.green .kpi-val{color:var(--green);}
+.kpi.blue .kpi-val{color:var(--blue);}
+.kpi.purple .kpi-val{color:var(--purple);}
+.kpi-label{font-size:11px;color:var(--text2);}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-family:var(--serif);font-size:14px;font-weight:600;}
+.card-body{padding:16px 18px;}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{text-align:left;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;padding:8px 14px;background:var(--bg3);border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;}
+tbody tr:hover{background:var(--bg3);}
+tbody td{padding:11px 14px;font-size:13px;vertical-align:middle;}
+.col-user{display:flex;align-items:center;gap:8px;}
+.col-avatar{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;font-family:var(--serif);}
+.col-name{font-weight:500;}
+.col-email{font-size:11px;color:var(--text3);}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600;}
+.pill-green{background:var(--green-bg);color:var(--green);}
+.pill-gold{background:var(--gold-bg);color:var(--gold);}
+.pill-gray{background:var(--bg3);color:var(--text3);}
+
+/* FORM */
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;letter-spacing:.04em;text-transform:uppercase;}
+.form-input,.form-select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 11px;font-family:var(--sans);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;appearance:none;}
+.form-input:focus,.form-select:focus{border-color:var(--gold);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.form-grid{grid-template-columns:1fr;}}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:440px;max-height:90vh;overflow-y:auto;animation:fadeUp .2s ease;box-shadow:0 8px 40px rgba(0,0,0,.1);}
+@keyframes fadeUp{from{transform:translateY(16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-header h3{font-family:var(--serif);font-size:16px;}
+.modal-close{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+.modal-body{padding:22px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:#fff;border-radius:var(--radius);padding:11px 16px;font-size:12px;font-weight:500;z-index:999;transform:translateX(140%);transition:transform .3s ease;box-shadow:0 8px 32px rgba(0,0,0,.15);}
+.toast.show{transform:translateX(0);}
+
+/* MOBILE */
+.sidebar-toggle{display:none;position:fixed;top:14px;left:14px;z-index:200;background:var(--gold);border:none;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:16px;color:#fff;}
+@media(max-width:640px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .sidebar-toggle{display:flex;align-items:center;justify-content:center;}
+  .topbar{padding-left:60px;}
+}
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="brand">
+      <div class="brand-mark">E</div>
+      <div>
+        <div class="brand-name">Elyon</div>
+        <span class="brand-badge">Portal RH</span>
+      </div>
+    </div>
+    <div class="company-info">
+      <div class="company-icon">🏢</div>
+      <div>
+        <div class="company-name" id="company-name">Empresa</div>
+        <div class="company-sub">Plano Premium</div>
+      </div>
+    </div>
+  </div>
+  <nav class="nav">
+    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</button>
+    <button class="nav-item" onclick="showPage('colaboradores',this)"><span class="nav-icon">👥</span> Colaboradores</button>
+    <button class="nav-item" onclick="showPage('aulas',this)"><span class="nav-icon">🎓</span> Aulas</button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar" id="rh-avatar">RH</div>
+      <div>
+        <div class="user-name-el" id="rh-nome">Carregando...</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);">Gerente de RH</div>
+      </div>
+      <button class="logout-btn-sidebar" onclick="fazerLogout()" title="Sair">⎋</button>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <button class="btn btn-outline" onclick="openModal()">+ Colaborador</button>
+    <button class="btn btn-gold" id="export-btn">⬇ Exportar</button>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="kpi-grid">
+        <div class="kpi gold"><div class="kpi-icon">👥</div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-label">colaboradores</div></div>
+        <div class="kpi green"><div class="kpi-icon">🎓</div><div class="kpi-val" id="kpi-aulas">0</div><div class="kpi-label">aulas realizadas</div></div>
+        <div class="kpi blue"><div class="kpi-icon">📅</div><div class="kpi-val" id="kpi-agendadas">0</div><div class="kpi-label">aulas agendadas</div></div>
+        <div class="kpi purple"><div class="kpi-icon">⭐</div><div class="kpi-val" id="kpi-ativos">0</div><div class="kpi-label">colaboradores ativos</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Últimas aulas agendadas</div></div>
+        <div class="card-body" id="dash-aulas">
+          <div style="text-align:center;color:var(--text3);padding:20px;">Carregando...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLABORADORES -->
+    <div class="page" id="page-colaboradores">
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <input class="form-input" style="flex:1;min-width:200px;" placeholder="Buscar colaborador..." id="search-colab" oninput="filtrarColabs()">
+        <button class="btn btn-gold" onclick="openModal()">+ Adicionar</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Colaborador</th><th>Aulas</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody id="colab-tbody">
+              <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3);">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AULAS -->
+    <div class="page" id="page-aulas">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Todas as aulas da empresa</div></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Colaborador</th><th>Professor</th><th>Modalidade</th><th>Data</th><th>Horário</th><th>Status</th></tr>
+            </thead>
+            <tbody id="aulas-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3);">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL ADICIONAR COLABORADOR -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Adicionar colaborador</h3>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="f-nome" placeholder="Nome completo"></div>
+        <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="f-email" type="email" placeholder="email@empresa.com"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Departamento</label><input class="form-input" id="f-dept" placeholder="Ex: Tecnologia"></div>
+      <div class="form-group"><label class="form-label">Senha inicial</label><input class="form-input" id="f-senha" type="password" placeholder="Mínimo 6 caracteres"></div>
+      <div id="modal-error" style="color:var(--red);font-size:12px;margin-bottom:10px;display:none;"></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline" style="flex:1;" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" style="flex:2;" id="btn-add" onclick="adicionarColab()">Convidar colaborador</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'
+  import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'
+  import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, where, updateDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkXEI77NRsN52ojk0La4_hgOVmK6sdq1c",
+    authDomain: "elyon-hub.firebaseapp.com",
+    projectId: "elyon-hub",
+    storageBucket: "elyon-hub.firebasestorage.app",
+    messagingSenderId: "798443608741",
+    appId: "1:798443608741:web:310a082137f374bfe74b4c"
+  }
+
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
+  const db = getFirestore(app)
+
+  let currentUser = null
+  let userData = null
+  let colaboradores = []
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return }
+    currentUser = user
+    const userDoc = await getDoc(doc(db, 'users', user.uid))
+    if (userDoc.exists()) {
+      userData = userDoc.data()
+      if (userData.role !== 'rh') {
+        if (userData.role === 'colaborador') window.location.href = 'app-colaborador_2.html'
+        else if (userData.role === 'professor') window.location.href = 'portal-professor_1.html'
+        return
+      }
+      const nome = userData.nome || 'RH'
+      document.getElementById('rh-nome').textContent = nome
+      document.getElementById('rh-avatar').textContent = nome.split(' ').map(n=>n[0]).slice(0,2).join('')
+      document.getElementById('company-name').textContent = userData.empresa || 'Minha Empresa'
+    }
+    carregarDados()
+  })
+
+  async function carregarDados() {
+    await carregarColaboradores()
+    await carregarAulas()
+    atualizarDashboard()
+  }
+
+  async function carregarColaboradores() {
+    try {
+      const q = query(collection(db, 'users'), where('role', '==', 'colaborador'))
+      const snap = await getDocs(q)
+      colaboradores = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      document.getElementById('kpi-total').textContent = colaboradores.length
+      document.getElementById('kpi-ativos').textContent = colaboradores.filter(c => c.ativo !== false).length
+      renderColaboradores(colaboradores)
+    } catch(e) { console.error(e) }
+  }
+
+  function renderColaboradores(list) {
+    const tbody = document.getElementById('colab-tbody')
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3);">Nenhum colaborador cadastrado.</td></tr>'; return }
+    const colors = ['#2D7A5F','#C8963C','#2563A8','#6B46C1','#C0392B','#8B6355']
+    tbody.innerHTML = list.map((c,i) => `
+      <tr>
+        <td><div class="col-user">
+          <div class="col-avatar" style="background:${colors[i%colors.length]}">${(c.nome||'?').split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
+          <div><div class="col-name">${c.nome||'—'}</div><div class="col-email">${c.email||'—'}</div></div>
+        </div></td>
+        <td>${c.totalAulas||0}</td>
+        <td><span class="pill ${c.ativo!==false?'pill-green':'pill-gray'}">${c.ativo!==false?'Ativo':'Inativo'}</span></td>
+        <td><button class="btn btn-outline" style="font-size:11px;padding:4px 10px;" onclick="removerColab('${c.id}')">Remover</button></td>
+      </tr>`).join('')
+  }
+
+  window.filtrarColabs = function() {
+    const q = document.getElementById('search-colab').value.toLowerCase()
+    renderColaboradores(q ? colaboradores.filter(c => (c.nome||'').toLowerCase().includes(q) || (c.email||'').toLowerCase().includes(q)) : colaboradores)
+  }
+
+  let aulasData = []
+  async function carregarAulas() {
+    try {
+      const snap = await getDocs(collection(db, 'aulas'))
+      aulasData = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      document.getElementById('kpi-aulas').textContent = aulasData.filter(a => a.status === 'concluida').length
+      document.getElementById('kpi-agendadas').textContent = aulasData.filter(a => a.status === 'confirmada').length
+      renderAulas()
+      renderDashAulas()
+    } catch(e) { console.error(e) }
+  }
+
+  function renderAulas() {
+    const tbody = document.getElementById('aulas-tbody')
+    if (!aulasData.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3);">Nenhuma aula registrada.</td></tr>'; return }
+    tbody.innerHTML = aulasData.slice(0,50).map(a => `
+      <tr>
+        <td>${a.colaboradorNome||'—'}</td>
+        <td>${a.professorNome||'—'}</td>
+        <td>${a.modalidade||'—'}</td>
+        <td>${a.data||'—'}</td>
+        <td>${a.horario||'—'}</td>
+        <td><span class="pill ${a.status==='confirmada'?'pill-green':a.status==='concluida'?'pill-gray':'pill-gold'}">${a.status||'—'}</span></td>
+      </tr>`).join('')
+  }
+
+  function renderDashAulas() {
+    const el = document.getElementById('dash-aulas')
+    const recentes = aulasData.slice(0,5)
+    if (!recentes.length) { el.innerHTML = '<div style="text-align:center;color:var(--text3);">Nenhuma aula ainda.</div>'; return }
+    el.innerHTML = recentes.map(a => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div>
+          <div style="font-size:13px;font-weight:500;">${a.colaboradorNome||'—'}</div>
+          <div style="font-size:11px;color:var(--text3);">${a.modalidade} com ${a.professorNome} · ${a.data} ${a.horario}</div>
+        </div>
+        <span class="pill ${a.status==='confirmada'?'pill-green':'pill-gray'}">${a.status}</span>
+      </div>`).join('')
+  }
+
+  function atualizarDashboard() {}
+
+  window.adicionarColab = async function() {
+    const nome = document.getElementById('f-nome').value.trim()
+    const email = document.getElementById('f-email').value.trim()
+    const dept = document.getElementById('f-dept').value.trim()
+    const senha = document.getElementById('f-senha').value
+    const errEl = document.getElementById('modal-error')
+    const btn = document.getElementById('btn-add')
+    errEl.style.display = 'none'
+    if (!nome || !email || !senha) { errEl.textContent = 'Preencha nome, e-mail e senha.'; errEl.style.display = 'block'; return }
+    if (senha.length < 6) { errEl.textContent = 'Senha deve ter mínimo 6 caracteres.'; errEl.style.display = 'block'; return }
+    btn.disabled = true; btn.textContent = 'Criando...'
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, senha)
+      await setDoc(doc(db, 'users', cred.user.uid), { uid: cred.user.uid, nome, email, role: 'colaborador', departamento: dept, creditos: 8, totalAulas: 0, ativo: true, criadoEm: new Date().toISOString() })
+      closeModal()
+      showToast(`${nome} adicionado com sucesso!`)
+      carregarColaboradores()
+      document.getElementById('f-nome').value = ''
+      document.getElementById('f-email').value = ''
+      document.getElementById('f-dept').value = ''
+      document.getElementById('f-senha').value = ''
+    } catch(e) {
+      errEl.textContent = e.code === 'auth/email-already-in-use' ? 'E-mail já cadastrado.' : 'Erro ao criar conta.'
+      errEl.style.display = 'block'
+    }
+    btn.disabled = false; btn.textContent = 'Convidar colaborador'
+  }
+
+  window.removerColab = async function(id) {
+    if (!confirm('Remover este colaborador?')) return
+    await updateDoc(doc(db, 'users', id), { ativo: false })
+    showToast('Colaborador removido.')
+    carregarColaboradores()
+  }
+
+  window.showPage = function(name, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+    document.getElementById('page-'+name).classList.add('active')
+    el.classList.add('active')
+    document.getElementById('page-title').textContent = {dashboard:'Dashboard',colaboradores:'Colaboradores',aulas:'Aulas'}[name]
+    if (name==='aulas') renderAulas()
+    document.getElementById('sidebar').classList.remove('open')
+  }
+
+  window.openModal = function() { document.getElementById('modal').classList.add('open') }
+  window.closeModal = function() { document.getElementById('modal').classList.remove('open') }
+  window.fazerLogout = async function() { await signOut(auth); window.location.href = 'login.html' }
+  window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('open') }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast')
+    t.textContent = msg; t.classList.add('show')
+    setTimeout(() => t.classList.remove('show'), 3000)
+  }
+
+  document.getElementById('export-btn').onclick = function() {
+    const rows = [['Colaborador','E-mail','Aulas','Status']]
+    colaboradores.forEach(c => rows.push([c.nome,c.email,c.totalAulas||0,c.ativo!==false?'Ativo':'Inativo']))
+    const csv = rows.map(r => r.join(',')).join('\n')
+    const a = document.createElement('a')
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv)
+    a.download = 'relatorio-elyon.csv'
+    a.click()
+    showToast('Relatório exportado!')
+  }
+</script>
+</body>
+</html>
